@@ -13,7 +13,7 @@ import {
 import type { HormoneRange } from '../lib/types';
 
 interface RangeIndicatorProps {
-  range?: HormoneRange;
+  ranges?: HormoneRange[];
   isVisible: boolean;
 }
 
@@ -81,37 +81,46 @@ function getIconComponent(iconType?: string) {
   }
 }
 
-export function RangeIndicator({ range, isVisible }: RangeIndicatorProps) {
-  if (!isVisible || !range) {
+export function RangeIndicator({ ranges, isVisible }: RangeIndicatorProps) {
+  if (!isVisible || !ranges || ranges.length === 0) {
     return null;
   }
 
-  const IconComponent = getIconComponent(range.iconType);
-  const customStyle = getBackgroundStyle(range.iconType, range.color);
-
-  // 现在所有范围都使用自定义样式以获得更好的可读性
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.3 }}
-      className="mt-4 p-3 rounded-lg shadow-sm border-2 bg-base-100"
-      style={{
-        backgroundColor: customStyle.backgroundColor,
-        borderColor: customStyle.borderColor
-      }}
-    >
-      <div className="flex items-center gap-2">
-        <IconComponent
-          className="w-5 h-5 flex-shrink-0"
-          style={{ color: customStyle.borderColor }}
-        />
-        <div>
-          <div className="font-medium text-base-content">{range.label}</div>
-          <div className="text-sm text-base-content/70">{range.description}</div>
-        </div>
-      </div>
-    </motion.div>
+    <div className="mt-4 space-y-3">
+      {ranges.map((range, index) => {
+        const IconComponent = getIconComponent(range.iconType);
+        const customStyle = getBackgroundStyle(range.iconType, range.color);
+
+        return (
+          <motion.div
+            key={`${range.label}-${index}`}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{
+              duration: 0.3,
+              delay: index * 0.1 // 交错动画效果
+            }}
+            className="p-3 rounded-lg shadow-sm border-2 bg-base-100"
+            style={{
+              backgroundColor: customStyle.backgroundColor,
+              borderColor: customStyle.borderColor
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <IconComponent
+                className="w-5 h-5 flex-shrink-0"
+                style={{ color: customStyle.borderColor }}
+              />
+              <div>
+                <div className="font-medium text-base-content">{range.label}</div>
+                <div className="text-sm text-base-content/70">{range.description}</div>
+              </div>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
   );
 }

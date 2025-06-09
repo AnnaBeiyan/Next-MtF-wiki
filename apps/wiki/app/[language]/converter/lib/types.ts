@@ -31,7 +31,7 @@ export interface ConversionResult {
   value: number;
   unit: string;
   isValid: boolean;
-  range?: HormoneRange;
+  ranges?: HormoneRange[];
 }
 
 export interface HistoryRecord {

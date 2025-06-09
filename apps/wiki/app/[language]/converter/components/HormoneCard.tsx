@@ -265,7 +265,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
 
         {/* 范围指示器 */}
         <RangeIndicator
-          range={state.result?.range}
+          ranges={state.result?.ranges}
           isVisible={state.result?.isValid === true}
         />
       </div>

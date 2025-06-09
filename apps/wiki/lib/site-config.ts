@@ -8,10 +8,10 @@ export interface NavigationItem {
 
 export interface ThemeOption {
   key: string;
-  label: string;
+  labelKey: string; // 翻译键而非直接文本
   value: string;
   icon: string;
-  description: string;
+  descriptionKey: string; // 翻译键而非直接文本
 }
 
 export interface ThemeConfig {
@@ -65,24 +65,24 @@ export const siteConfig: SiteConfig = {
     options: [
       {
         key: 'system',
-        label: '跟随系统',
+        labelKey: 'themeSystem',
         value: 'system',
         icon: 'computer',
-        description: '根据系统设置自动切换主题',
+        descriptionKey: 'themeSystemDesc',
       },
       {
         key: 'light',
-        label: '浅色主题',
+        labelKey: 'themeLight',
         value: 'light',
         icon: 'sun',
-        description: '使用浅色主题',
+        descriptionKey: 'themeLightDesc',
       },
       {
         key: 'dark',
-        label: '深色主题',
+        labelKey: 'themeDark',
         value: 'dark',
         icon: 'moon',
-        description: '使用深色主题',
+        descriptionKey: 'themeDarkDesc',
       },
       // 未来可以在这里添加更多主题选项，例如：
       // {

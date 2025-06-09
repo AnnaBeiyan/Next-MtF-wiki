@@ -3,8 +3,10 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState, useRef } from 'react';
 import { useAtom } from 'jotai';
+import { useParams } from 'next/navigation';
 import { themePreferenceAtom, themeMenuOpenAtom } from '../lib/theme-atoms';
 import { getThemeOptions } from '../lib/site-config';
+import { t } from '../lib/i18n';
 
 // 图标组件
 const ThemeIcon = ({ icon, className = "w-5 h-5" }: { icon: string; className?: string }) => {
@@ -94,7 +96,10 @@ export default function ThemeToggle() {
   const [themePreference, setThemePreference] = useAtom(themePreferenceAtom);
   const [isMenuOpen, setIsMenuOpen] = useAtom(themeMenuOpenAtom);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const params = useParams();
 
+  // 获取当前语言
+  const currentLanguage = (params?.language as string) || 'zh-cn';
   const themeOptions = getThemeOptions();
 
   useEffect(() => {
@@ -153,8 +158,8 @@ export default function ThemeToggle() {
         tabIndex={0}
         role="button"
         className="btn btn-ghost btn-circle"
-        aria-label="主题设置"
-        title={`当前主题: ${currentOption.label}`}
+        aria-label={t('themeSettings', currentLanguage)}
+        title={`${t('currentTheme', currentLanguage)}: ${t(currentOption.labelKey as any, currentLanguage)}`}
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
         <ThemeIcon icon={currentOption.icon} />
@@ -166,7 +171,7 @@ export default function ThemeToggle() {
         >
             <ul className="menu">
               <li className="menu-title">
-                <span>主题设置</span>
+                <span>{t('themeSettings', currentLanguage)}</span>
               </li>
               {themeOptions.map((option) => (
                 <li key={option.key}>
@@ -179,8 +184,8 @@ export default function ThemeToggle() {
                   >
                     <ThemeIcon icon={option.icon} className="w-4 h-4" />
                     <div className="flex flex-col items-start">
-                      <span className="font-medium">{option.label}</span>
-                      <span className="text-xs opacity-70">{option.description}</span>
+                      <span className="font-medium">{t(option.labelKey as any, currentLanguage)}</span>
+                      <span className="text-xs opacity-70">{t(option.descriptionKey as any, currentLanguage)}</span>
                     </div>
                     {(theme || themePreference) === option.value && (
                       <svg
@@ -199,11 +204,6 @@ export default function ThemeToggle() {
                   </button>
                 </li>
               ))}
-              <li className="mt-2 pt-2 border-t border-base-300">
-                <div className="text-xs opacity-60 px-3 py-1">
-                  数据仅存储在浏览器本地
-                </div>
-              </li>
             </ul>
           </div>
         )}

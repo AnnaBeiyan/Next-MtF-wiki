@@ -5,7 +5,7 @@ import { getLanguagesInfo } from "@/service/directory-service";
 // 生成静态参数，用于构建时预生成所有语言页面
 export async function generateStaticParams() {
   const languagesInfo = await getLanguagesInfo();
-  return languagesInfo.map(info => ({ language: info.code }));
+  return languagesInfo.map(lang => ({ language: lang.code }));
 }
 
 export default function ConverterPage() {

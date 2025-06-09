@@ -41,33 +41,34 @@ export function convertHormoneValue(
 }
 
 /**
- * 检查数值是否在合理范围内
+ * 检查数值是否在合理范围内，返回所有符合的范围
  */
-export function checkValueRange(
+export function checkValueRanges(
   value: number,
   unit: string,
   hormone: HormoneType
-): HormoneRange | undefined {
+): HormoneRange[] {
   // 将值转换为基础单位进行比较
   const unitInfo = getUnitBySymbol(hormone, unit);
-  if (!unitInfo) return undefined;
-  
+  if (!unitInfo) return [];
+
   const baseValue = value * unitInfo.multiplier;
-  
-  // 查找匹配的范围
+  const matchingRanges: HormoneRange[] = [];
+
+  // 查找所有匹配的范围
   for (const range of hormone.ranges) {
     const rangeUnitInfo = getUnitBySymbol(hormone, range.unit);
     if (!rangeUnitInfo) continue;
-    
+
     const rangeMinBase = range.min * rangeUnitInfo.multiplier;
     const rangeMaxBase = range.max * rangeUnitInfo.multiplier;
-    
+
     if (baseValue >= rangeMinBase && baseValue <= rangeMaxBase) {
-      return range;
+      matchingRanges.push(range);
     }
   }
-  
-  return undefined;
+
+  return matchingRanges;
 }
 
 /**
@@ -91,13 +92,13 @@ export function performConversion(
   
   try {
     const convertedValue = convertHormoneValue(numValue, fromUnit, toUnit, hormone);
-    const range = checkValueRange(convertedValue, toUnit, hormone);
-    
+    const ranges = checkValueRanges(convertedValue, toUnit, hormone);
+
     return {
       value: convertedValue,
       unit: toUnit,
       isValid: true,
-      range,
+      ranges,
     };
   } catch (error) {
     return { value: 0, unit: toUnit, isValid: false };
