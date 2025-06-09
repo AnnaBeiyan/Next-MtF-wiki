@@ -74,6 +74,8 @@ export default function GithubContributors({ attrs, children }: ShortCodeCompPro
             >
               <a href={contributor.html_url} target="_blank" rel="noopener noreferrer">
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={contributor.avatar_url}
                   alt={contributor.login}
                   style={{
