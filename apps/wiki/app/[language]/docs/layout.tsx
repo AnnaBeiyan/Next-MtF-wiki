@@ -2,7 +2,7 @@ import Sidebar from "@/components/Sidebar";
 import MobileSidebar from "@/components/MobileSidebar";
 import TableOfContents from "@/components/TableOfContents";
 import MobileTableOfContents from "@/components/MobileTableOfContents";
-import { getDocsNavigationForClient } from "./directory-service";
+import { getDocsNavigationForClient } from "@/service/directory-service";
 
 export default async function DocsLayout({
   children,

@@ -19,8 +19,22 @@ export const translations = {
     "zh-cn": "关于",
     "zh-hant": "關於",
     ja: "について",
-    es: "Acerca de", 
+    es: "Acerca de",
     en: "About",
+  },
+  converter: {
+    "zh-cn": "激素换算",
+    "zh-hant": "荷爾蒙換算",
+    ja: "ホルモン換算",
+    es: "Conversión de hormonas",
+    en: "Hormone Converter",
+  },
+  cupCalculator: {
+    "zh-cn": "罩杯计算器",
+    "zh-hant": "罩杯計算器",
+    ja: "ブラジャーサイズ計算",
+    es: "Calculadora de talla de sujetador",
+    en: "Cup Calculator",
   },
   
   // 页脚

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { Link } from "./progress";
 import { useState, useEffect, useRef } from "react";
 
-import type { DocItem } from "../app/[language]/docs/directory-service";
+import type { DocItem } from "@/service/directory-service";
 import styles from "./css/sidebar.module.css";
 import { isElementInScrollContainerView } from "@/lib/utils";
 

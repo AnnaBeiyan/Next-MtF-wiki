@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { getContentDir } from "@/app/[language]/docs/[[...slug]]/utils";
-import { getDirPath } from '@/app/[language]/docs/directory-service';
+import { getDirPath } from '@/service/directory-service';
 
 export interface GalleryImage {
   path: string;

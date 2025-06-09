@@ -5,9 +5,9 @@ import {
   getContentDir,
   getIndexPageSlugs,
   getIndexPageSlugsWithOutExtensionName,
-} from "./[[...slug]]/utils";
+} from "../app/[language]/docs/[[...slug]]/utils";
 import { cache } from "react";
-import { Frontmatter } from "./[[...slug]]/types";
+import { Frontmatter } from "../app/[language]/docs/[[...slug]]/types";
 
 // 文档项接口
 export interface DocItem {

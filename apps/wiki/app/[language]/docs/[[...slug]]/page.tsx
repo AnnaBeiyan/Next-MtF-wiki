@@ -17,7 +17,7 @@ import {
   getDocItemByNavigationMap,
   getDocsNavigationMap,
   getDocsNavigationRoot,
-} from "../directory-service";
+} from "@/service/directory-service";
 import { Link } from "../../../../components/progress";
 import type { DetailedHTMLProps, ImgHTMLAttributes } from "react";
 import { t } from "@/lib/i18n";

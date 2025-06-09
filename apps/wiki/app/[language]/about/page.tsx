@@ -1,4 +1,4 @@
-import { getLanguagesInfo } from "../docs/directory-service";
+import { getLanguagesInfo } from "@/service/directory-service";
 
 export default function AboutPage() {
   return <div>About</div>;

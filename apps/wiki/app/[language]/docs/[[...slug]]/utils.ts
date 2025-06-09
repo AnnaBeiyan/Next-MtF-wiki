@@ -1,7 +1,7 @@
 import path from "node:path";
 
 // 重新导出目录服务中的功能，保持向后兼容
-export { getLanguagesInfo } from "../directory-service";
+export { getLanguagesInfo } from "@/service/directory-service";
 
 export function getContentDir() {
   return path.join(process.cwd(), "../../source", "content");
