@@ -23,9 +23,15 @@ export interface ThemeConfig {
   options: ThemeOption[];
 }
 
+export interface LanguageConfig {
+  code: string;
+  subfolders: string[]; // 该语言支持的子目录
+}
+
 export interface SiteConfig {
   navigation: NavigationItem[];
   theme: ThemeConfig;
+  languages: LanguageConfig[]; // 新增语言配置
 }
 
 // 站点配置
@@ -101,21 +107,33 @@ export const siteConfig: SiteConfig = {
       // },
     ],
   },
+  languages: [
+    {
+      code: 'zh-cn',
+      subfolders: ['docs', 'converter', 'about'],
+    },
+    {
+      code: 'zh-hant',
+      subfolders: ['docs'],
+    },
+    {
+      code: 'ja',
+      subfolders: ['docs'],
+    },
+    {
+      code: 'en',
+      subfolders: ['docs'],
+    },
+    {
+      code: 'es',
+      subfolders: ['docs'],
+    },
+  ],
 };
 
 // 获取导航项配置
 export function getNavigationItems(): NavigationItem[] {
   return siteConfig.navigation.sort((a, b) => a.weight - b.weight);
-}
-
-// 检查当前路径是否应该显示侧边栏和目录
-export function shouldShowSidebar(pathname: string): boolean {
-  return pathname.includes('/docs');
-}
-
-// 检查当前路径是否应该显示目录
-export function shouldShowTableOfContents(pathname: string): boolean {
-  return pathname.includes('/docs');
 }
 
 // 获取主题配置
@@ -128,15 +146,13 @@ export function getThemeOptions(): ThemeOption[] {
   return siteConfig.theme.options;
 }
 
-// 根据主题值获取对应的 DaisyUI 主题名称
-export function getDaisyUITheme(theme: string): string {
-  const config = getThemeConfig();
-  switch (theme) {
-    case 'light':
-      return config.themes.light;
-    case 'dark':
-      return config.themes.dark;
-    default:
-      return config.themes.light; // 默认返回浅色主题
-  }
+// 获取语言配置
+export function getLanguageConfigs(): LanguageConfig[] {
+  return siteConfig.languages;
 }
+
+// 获取特定语言的配置
+export function getLanguageConfig(languageCode: string): LanguageConfig | undefined {
+  return siteConfig.languages.find(lang => lang.code === languageCode);
+}
+

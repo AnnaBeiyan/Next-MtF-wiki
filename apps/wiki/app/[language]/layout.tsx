@@ -91,7 +91,9 @@ export default async function LanguageLayout({
       </header>
 
       {/* 主要内容区域 */}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+          {children}
+      </main>
 
       {/* 页脚 */}
       <footer className="border-t bg-gradient-to-r from-base-200 to-base-300 border-base-300">

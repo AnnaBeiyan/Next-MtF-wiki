@@ -169,7 +169,7 @@ export default function ThemeToggle() {
         <div
           className="absolute right-0 top-full mt-2 w-52 bg-base-100 rounded-box shadow-lg border border-base-300 z-[1000] p-2"
         >
-            <ul className="menu">
+            <ul className="menu w-full">
               <li className="menu-title">
                 <span>{t('themeSettings', currentLanguage)}</span>
               </li>

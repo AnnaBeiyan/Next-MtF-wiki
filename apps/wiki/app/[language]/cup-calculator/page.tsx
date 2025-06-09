@@ -1,17 +1,16 @@
-import { Metadata } from 'next';
 import { CupCalculator } from './components/CupCalculator';
-import { Ruler, Heart, Shield } from 'lucide-react';
-import { getLanguagesInfo } from "@/service/directory-service";
+import { Ruler, Shield } from 'lucide-react';
 
-// 生成静态参数，用于构建时预生成所有语言页面
-export async function generateStaticParams() {
-  return [{ language: 'zh-cn' }];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ language: string }>;
+}) {
+  const { language } = await params;
+  return {
+    title: '罩杯计算器 - MtF.wiki',
+  };
 }
-
-export const metadata: Metadata = {
-  title: '罩杯计算器 - MtF.wiki',
-  keywords: ['罩杯计算器', '内衣尺寸', '胸围测量'],
-};
 
 export default function CupCalculatorPage() {
   return (
@@ -99,4 +98,8 @@ export default function CupCalculatorPage() {
       </div>
     </div>
   );
+}
+
+export async function generateStaticParams() {
+  return [{ language: 'zh-cn' }];
 }
