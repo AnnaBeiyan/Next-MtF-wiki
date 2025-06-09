@@ -28,3 +28,9 @@ export interface CalculatorState {
   result: CupResult | null;
   isCalculating: boolean;
 }
+
+export interface CupSizeInfo {
+  threshold: number;
+  size: string;
+  message: string;
+}

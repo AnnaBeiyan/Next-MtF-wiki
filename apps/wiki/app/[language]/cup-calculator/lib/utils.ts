@@ -54,9 +54,18 @@ export function calculateCupSize(measurements: MeasurementData): CupResult {
   const underBust = (underBustRelaxed + underBustExhale) / 2;
   const cupDifference = (bustRelaxed + bustBend45 + bustBend90) / 3 - underBust;
 
-  // 查找对应的罩杯尺寸
-  const cupInfo = CUP_SIZES.find(cup => cupDifference >= cup.min && cupDifference < cup.max);
-  
+  // 按照原版逻辑判断罩杯尺寸（使用 <= 判断）
+  let cupInfo = null;
+
+  // 循环查找对应的罩杯尺寸
+  for (let i = 0; i < CUP_SIZES.length; i++) {
+    if (cupDifference <= CUP_SIZES[i].threshold) {
+      cupInfo = CUP_SIZES[i];
+      break;
+    }
+  }
+
+  // 理论上不应该出现找不到的情况，因为最后一个threshold是Infinity
   if (!cupInfo) {
     return {
       isValid: false,
