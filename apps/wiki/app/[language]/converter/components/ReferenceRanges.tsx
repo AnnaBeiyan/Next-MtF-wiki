@@ -21,7 +21,7 @@ export function ReferenceRanges({ hormone }: ReferenceRangesProps) {
         <Calculator className="w-5 h-5 text-info" />
         <h3 className="text-lg font-semibold">参考范围说明</h3>
       </div>
-      
+      {hormone.ranges.length > 0 ? (
       <div className="space-y-4">
         {hormone.ranges.map((range, index) => (
           <motion.div
@@ -59,7 +59,11 @@ export function ReferenceRanges({ hormone }: ReferenceRangesProps) {
             </div>
           </motion.div>
         ))}
-      </div>
+      </div>) : (
+        <div className="text-sm text-base-content/60">
+          暂无参考范围
+        </div>
+      )}
     </motion.div>
   );
 }

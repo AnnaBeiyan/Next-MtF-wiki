@@ -136,9 +136,9 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
     >
       <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 border-b border-base-300/30">
         <h3 className="text-xl font-semibold text-base-content">{hormone.name}</h3>
-        <p className="text-sm text-base-content/60 mt-1">
-          支持 {hormone.units.map(u => u.symbol).join(' / ')} 单位互转
-        </p>
+        {/* <p className="text-sm text-base-content/60 mt-1">
+          支持 {hormone.units.map(u => u.symbol).join('、')} 单位互转
+        </p> */}
       </div>
 
       <div className="p-6">

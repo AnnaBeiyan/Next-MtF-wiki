@@ -3,7 +3,7 @@ export interface NavigationItem {
   href: string;
   translationKey: string;
   weight: number;
-  showInPages?: string[]; // 指定在哪些页面显示，如果为空则在所有页面显示
+  locale?: string[]; // 指定在哪些语言显示，如果为空则在所有语言显示
 }
 
 export interface ThemeOption {
@@ -47,12 +47,14 @@ export const siteConfig: SiteConfig = {
       key: 'converter',
       href: '/converter',
       translationKey: 'converter',
+      locale: ['zh-cn'],
       weight: 2,
     },
     {
       key: 'cup-calculator',
       href: '/cup-calculator',
       translationKey: 'cupCalculator',
+      locale: ['zh-cn'],
       weight: 3,
     },
     {
@@ -132,8 +134,8 @@ export const siteConfig: SiteConfig = {
 };
 
 // 获取导航项配置
-export function getNavigationItems(): NavigationItem[] {
-  return siteConfig.navigation.sort((a, b) => a.weight - b.weight);
+export function getNavigationItems(language: string): NavigationItem[] {
+  return siteConfig.navigation.filter(item => item.locale ? item.locale.includes(language) : true).sort((a, b) => a.weight - b.weight);
 }
 
 // 获取主题配置

@@ -23,9 +23,6 @@ export default function ConverterPage() {
             </h1>
             <HelpTooltip />
           </div>
-          <p className="text-base-content/70 text-lg">
-            常用激素水平单位换算工具，支持多种常用单位互转
-          </p>
         </header>
 
         <HormoneConverter />
@@ -35,12 +32,18 @@ export default function ConverterPage() {
             <p>
               <strong>注意：</strong>部分医院可能使用
               <Link
-                href="/zh-cn/converter/science-literacy"
-                className="link link-primary"
+                href="https://zh.wikipedia.org/zh-hans/%E5%9B%BD%E9%99%85%E5%8D%95%E4%BD%8D"
+                target="_blank"
+                className="link"
               >
                 IU（国际单位）
               </Link>
-              作为衡量激素水平的单位，但由于IU为医学效价单位，其与质量单位的换算取决于药物种类且可能随时间变化。
+              作为衡量激素水平的单位，但由于IU为医学效价单位，其与质量单位的换算取决于药物种类且可能随时间变化。详见 <Link
+                href="/zh-cn/converter/science-literacy"
+                className="link link-primary"
+              >
+                单位科普 - 国际单位（IU）
+              </Link>
             </p>
             <p>
               <strong>数据存储说明：</strong>您的换算历史记录仅存储在浏览器本地，不会上传到服务器。

@@ -24,15 +24,8 @@ export default async function LanguageLayout({
     name: getLanguageName(langCode),
   }));
 
-  // 获取当前路径在各语言中的可用性
-  const availablePaths = await getAvailablePaths(
-    availableLanguages,
-    "/[language]", // 这里会在客户端组件中被替换为实际路径
-    language,
-  );
-
   // 获取导航项配置
-  const navigationItems = getNavigationItems();
+  const navigationItems = getNavigationItems(language);
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-base-100 to-base-200">
@@ -69,7 +62,6 @@ export default async function LanguageLayout({
             <LanguageSwitcher
               currentLanguage={language}
               availableLanguages={languageOptions}
-              availablePaths={availablePaths}
             />
           </div>
         </div>
