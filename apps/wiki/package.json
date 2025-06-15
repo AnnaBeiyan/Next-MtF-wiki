@@ -58,6 +58,7 @@
     "@types/react-dom": "^19",
     "@types/remark-heading-id": "^1.0.0",
     "daisyui": "^5.0.37",
+    "postcss-preset-env": "^10.2.3",
     "serve": "^14.2.4",
     "tailwindcss": "^4",
     "typescript": "^5",
