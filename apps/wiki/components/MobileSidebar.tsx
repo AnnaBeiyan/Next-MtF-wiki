@@ -5,7 +5,6 @@ import { t } from '@/lib/i18n/client';
 import type { DocItemForClient } from '@/service/directory-service-client';
 import { useAtom } from 'jotai';
 import { ChevronDown, Menu, X } from 'lucide-react';
-import { AnimatePresence, motion } from 'motion/react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Link } from './progress';
@@ -121,8 +120,22 @@ export default function MobileSidebar({
   language,
 }: MobileSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const pathname = usePathname();
   const [bannerHeight] = useAtom(bannerHeightAtom);
+
+  // 控制动画状态
+  useEffect(() => {
+    if (isOpen) {
+      setIsVisible(true);
+    } else {
+      // 延迟隐藏，等待动画完成
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // 防止背景滚动
   useEffect(() => {
@@ -158,6 +171,10 @@ export default function MobileSidebar({
     setIsOpen(false);
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   // 计算按钮的底部位置，如果有 banner 就在 banner 上方
   const buttonBottomPosition =
     bannerHeight > 0 ? `${bannerHeight + 24}px` : '24px';
@@ -177,70 +194,65 @@ export default function MobileSidebar({
       </button>
 
       {/* 遮罩层和侧边栏 */}
-      <AnimatePresence>
-        {isOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            {/* 遮罩层 */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15, ease: 'easeInOut' }}
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={() => setIsOpen(false)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setIsOpen(false);
-                }
-              }}
-              role="button"
-              aria-hidden={true}
-            />
+      {isVisible && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* 遮罩层 */}
+          <div
+            className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-150 ease-in-out ${
+              isOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+            onClick={handleClose}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleClose();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="关闭导航"
+          />
 
-            {/* 侧边栏内容 */}
-            <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="absolute top-0 left-0 h-full w-80 max-w-[85vw] bg-base-100 shadow-2xl border-r border-base-300"
-            >
-              {/* 头部 */}
-              <div className="flex items-center justify-between p-4 border-b border-base-300 bg-primary/5">
-                <h2 className="text-lg font-semibold text-base-content flex items-center space-x-2">
-                  <Menu className="w-5 h-5 text-primary" />
-                  <span>{t('navigation', language)}</span>
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-lg hover:bg-base-300/50 transition-colors"
-                  aria-label="close"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+          {/* 侧边栏内容 */}
+          <div
+            className={`absolute top-0 left-0 h-full w-80 max-w-[85vw] bg-base-100 shadow-2xl border-r border-base-300 transform transition-transform duration-300 ease-in-out ${
+              isOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+          >
+            {/* 头部 */}
+            <div className="flex items-center justify-between p-4 border-b border-base-300 bg-primary/5">
+              <h2 className="text-lg font-semibold text-base-content flex items-center space-x-2">
+                <Menu className="w-5 h-5 text-primary" />
+                <span>{t('navigation', language)}</span>
+              </h2>
+              <button
+                type="button"
+                onClick={handleClose}
+                className="p-2 rounded-lg hover:bg-base-300/50 transition-colors"
+                aria-label="close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-              {/* 导航内容 */}
-              <div className="overflow-y-auto h-[calc(100vh-5rem)] p-4">
-                <nav>
-                  <div className="space-y-1">
-                    {navigationItems.map((item) => (
-                      <MobileNavItem
-                        key={item.path}
-                        item={item}
-                        language={language}
-                        currentPath={pathname}
-                        onItemClick={handleItemClick}
-                      />
-                    ))}
-                  </div>
-                </nav>
-              </div>
-            </motion.div>
+            {/* 导航内容 */}
+            <div className="overflow-y-auto h-[calc(100vh-5rem)] p-4">
+              <nav>
+                <div className="space-y-1">
+                  {navigationItems.map((item) => (
+                    <MobileNavItem
+                      key={item.path}
+                      item={item}
+                      language={language}
+                      currentPath={pathname}
+                      onItemClick={handleItemClick}
+                    />
+                  ))}
+                </div>
+              </nav>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </>
   );
 }

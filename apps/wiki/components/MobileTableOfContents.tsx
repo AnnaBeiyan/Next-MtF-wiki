@@ -4,7 +4,6 @@ import { bannerHeightAtom } from '@/lib/banner-atoms';
 import { t } from '@/lib/i18n/client';
 import { useAtom } from 'jotai';
 import { SquareMenu, X } from 'lucide-react';
-import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -21,9 +20,23 @@ export default function MobileTableOfContents({
   language,
 }: MobileTableOfContentsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>('');
   const [bannerHeight] = useAtom(bannerHeightAtom);
+
+  // 控制动画状态
+  useEffect(() => {
+    if (isOpen) {
+      setIsVisible(true);
+    } else {
+      // 延迟隐藏，等待动画完成
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     // 提取页面中main元素内的标题
@@ -111,6 +124,10 @@ export default function MobileTableOfContents({
   const buttonBottomPosition =
     bannerHeight > 0 ? `${bannerHeight + 24}px` : '24px';
 
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
       {/* 浮动按钮 */}
@@ -125,83 +142,77 @@ export default function MobileTableOfContents({
       </button>
 
       {/* 目录弹窗 */}
-      <AnimatePresence>
-        {isOpen && (
-          <div className="fixed inset-0 z-50 xl:hidden">
-            {/* 遮罩层 */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15, ease: 'easeInOut' }}
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={() => setIsOpen(false)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setIsOpen(false);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label="关闭目录"
-            />
+      {isVisible && (
+        <div className="fixed inset-0 z-50 xl:hidden">
+          {/* 遮罩层 */}
+          <div
+            className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-150 ease-in-out ${
+              isOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+            onClick={handleClose}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleClose();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="关闭目录"
+          />
 
-            {/* 弹窗内容 */}
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="absolute bottom-0 left-0 right-0 max-h-[70vh] bg-base-100 rounded-t-xl shadow-2xl border-t border-base-300"
-            >
-              {/* 头部 */}
-              <div className="flex items-center justify-between p-4 border-b border-base-300 bg-primary/5">
-                <h2 className="text-lg font-semibold text-base-content flex items-center space-x-2">
-                  <SquareMenu className="w-5 h-5 text-primary" />
-                  <span>{t('tableOfContents', language)}</span>
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-lg hover:bg-base-300/50 transition-colors"
-                  aria-label="close"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+          {/* 弹窗内容 */}
+          <div
+            className={`absolute bottom-0 left-0 right-0 max-h-[70vh] bg-base-100 rounded-t-xl shadow-2xl border-t border-base-300 transform transition-transform duration-300 ease-in-out ${
+              isOpen ? 'translate-y-0' : 'translate-y-full'
+            }`}
+          >
+            {/* 头部 */}
+            <div className="flex items-center justify-between p-4 border-b border-base-300 bg-primary/5">
+              <h2 className="text-lg font-semibold text-base-content flex items-center space-x-2">
+                <SquareMenu className="w-5 h-5 text-primary" />
+                <span>{t('tableOfContents', language)}</span>
+              </h2>
+              <button
+                type="button"
+                onClick={handleClose}
+                className="p-2 rounded-lg hover:bg-base-300/50 transition-colors"
+                aria-label="close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-              {/* 目录内容 */}
-              <div className="overflow-y-auto max-h-96 p-4">
-                <nav className="space-y-1">
-                  {tocItems.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => scrollToHeading(item.id)}
-                      className={`
-                      block w-full text-left text-sm transition-colors
-                      ${item.level === 1 ? 'font-medium' : ''}
-                      ${item.level === 2 ? 'pl-3' : ''}
-                      ${item.level === 3 ? 'pl-6' : ''}
-                      ${item.level === 4 ? 'pl-9' : ''}
-                      ${item.level >= 5 ? 'pl-12' : ''}
-                      ${
-                        activeId === item.id
-                          ? 'text-primary font-medium bg-primary/10'
-                          : 'text-base-content/80 hover:text-base-content hover:bg-base-200/50'
-                      }
-                      py-2 px-3 rounded-lg
-                    `}
-                    >
-                      {item.text}
-                    </button>
-                  ))}
-                </nav>
-              </div>
-            </motion.div>
+            {/* 目录内容 */}
+            <div className="overflow-y-auto max-h-96 p-4">
+              <nav className="space-y-1">
+                {tocItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => scrollToHeading(item.id)}
+                    className={`
+                    block w-full text-left text-sm transition-colors
+                    ${item.level === 1 ? 'font-medium' : ''}
+                    ${item.level === 2 ? 'pl-3' : ''}
+                    ${item.level === 3 ? 'pl-6' : ''}
+                    ${item.level === 4 ? 'pl-9' : ''}
+                    ${item.level >= 5 ? 'pl-12' : ''}
+                    ${
+                      activeId === item.id
+                        ? 'text-primary font-medium bg-primary/10'
+                        : 'text-base-content/80 hover:text-base-content hover:bg-base-200/50'
+                    }
+                    py-2 px-3 rounded-lg
+                  `}
+                  >
+                    {item.text}
+                  </button>
+                ))}
+              </nav>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </>
   );
 }
