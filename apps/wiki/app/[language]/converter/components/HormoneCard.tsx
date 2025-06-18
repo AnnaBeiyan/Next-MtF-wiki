@@ -3,10 +3,10 @@
 import { useAtom } from 'jotai';
 import { ArrowUpDown, Calculator, Check, Copy, X } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { addHistoryRecordAtom, conversionStateAtom } from '../lib/atoms';
 import type { HormoneType } from '../lib/types';
-import { formatValue, getHormoneById, performConversion } from '../lib/utils';
+import { formatValue, performConversion } from '../lib/utils';
 import { RangeIndicator } from './RangeIndicator';
 import { UnitSelector } from './UnitSelector';
 
@@ -19,6 +19,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
   const [, addHistoryRecord] = useAtom(addHistoryRecordAtom);
   const [isConverting, setIsConverting] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const isSelected = state.selectedHormone === hormone.id;
 
@@ -43,11 +44,25 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
 
   // 当激素类型、单位或输入值改变时重新计算结果
   useEffect(() => {
-    if (
-      isSelected &&
-      state.inputValue.trim() &&
-      !Number.isNaN(Number.parseFloat(state.inputValue))
-    ) {
+    if (!isSelected) return;
+
+    const trimmedInput = state.inputValue.trim();
+
+    function setErrorState() {
+      // 输入不为空但无效（包含汉字等），设置无效结果
+      setState((prev) => ({
+        ...prev,
+        result: {
+          value: 0,
+          unit: state.toUnit,
+          isValid: false,
+        },
+      }));
+    }
+    if (trimmedInput && !inputRef.current?.checkValidity()) {
+      setErrorState();
+    } else if (trimmedInput && !Number.isNaN(Number.parseFloat(trimmedInput))) {
+      // 输入有效，进行转换
       setIsConverting(true);
 
       // 添加轻微延迟以显示动画效果
@@ -61,11 +76,10 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
         setState((prev) => ({ ...prev, result }));
         setIsConverting(false);
       }, 300);
-    } else if (
-      isSelected &&
-      (!state.inputValue.trim() ||
-        Number.isNaN(Number.parseFloat(state.inputValue)))
-    ) {
+    } else if (trimmedInput) {
+      setErrorState();
+    } else {
+      // 输入为空，清除结果
       setState((prev) => ({ ...prev, result: null }));
     }
   }, [
@@ -188,6 +202,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <input
+                  ref={inputRef}
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"

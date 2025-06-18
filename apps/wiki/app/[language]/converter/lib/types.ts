@@ -33,7 +33,8 @@ export interface HormoneRange {
   source: {
     name: string; // 数据来源名称
     url: string; // 数据来源链接
-  };
+  } | null;
+  isVisible?: boolean;
 }
 
 export interface ConversionResult {

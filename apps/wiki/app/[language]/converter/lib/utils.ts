@@ -1,3 +1,4 @@
+import { format } from 'd3-format';
 import { HORMONES } from './constants';
 import type {
   ConversionResult,
@@ -5,7 +6,6 @@ import type {
   HormoneType,
   HormoneUnit,
 } from './types';
-
 /**
  * 获取激素类型
  */
@@ -189,17 +189,7 @@ export function formatRangeValue(value: number): string {
   if (value === 0) return '0';
 
   // 根据数值大小选择合适的精度
-  if (value >= 1000) {
-    return value.toFixed(0);
-  } else if (value >= 100) {
-    return value.toFixed(1);
-  } else if (value >= 10) {
-    return value.toFixed(2);
-  } else if (value >= 1) {
-    return value.toFixed(3);
-  } else {
-    return value.toFixed(4);
-  }
+  return format('.4~r')(value);
 }
 
 /**

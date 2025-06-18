@@ -26,6 +26,10 @@ export function ReferenceRanges({ hormone }: ReferenceRangesProps) {
   // 检查两个单位是否等价
   const unitsAreEquivalent = areUnitsEquivalent(hormone, fromUnit, toUnit);
 
+  const visibleRanges = hormone.ranges.filter(
+    (range) => range.isVisible !== false,
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -37,9 +41,9 @@ export function ReferenceRanges({ hormone }: ReferenceRangesProps) {
         <Calculator className="w-5 h-5 text-info" />
         <h3 className="text-lg font-semibold">参考范围说明</h3>
       </div>
-      {hormone.ranges.length > 0 ? (
+      {visibleRanges.length > 0 ? (
         <div className="space-y-4">
-          {hormone.ranges.map((range, index) => {
+          {visibleRanges.map((range, index) => {
             // 转换范围到fromUnit和toUnit
             const fromUnitRange = convertRangeToUnit(range, fromUnit, hormone);
             const toUnitRange = convertRangeToUnit(range, toUnit, hormone);
@@ -85,16 +89,18 @@ export function ReferenceRanges({ hormone }: ReferenceRangesProps) {
                     {range.description}
                   </div>
                 )}
-                <div className="text-xs text-base-content/50 mt-1 italic">
-                  数据来源：
-                  <Link
-                    href={range.source.url}
-                    className="link link-primary hover:link-accent transition-colors"
-                    rel="noopener noreferrer"
-                  >
-                    {range.source.name}
-                  </Link>
-                </div>
+                {range.source && (
+                  <div className="text-xs text-base-content/50 mt-1 italic">
+                    数据来源：
+                    <Link
+                      href={range.source.url}
+                      className="link link-primary hover:link-accent transition-colors"
+                      rel="noopener noreferrer"
+                    >
+                      {range.source.name}
+                    </Link>
+                  </div>
+                )}
               </motion.div>
             );
           })}

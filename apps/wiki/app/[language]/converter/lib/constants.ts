@@ -1,4 +1,18 @@
-import type { HormoneType, HormoneUnit } from './types';
+import type { HormoneRange, HormoneType, HormoneUnit } from './types';
+
+function createMaxErrorRange(maxValue: number, unit: string): HormoneRange {
+  return {
+    label: '数值异常',
+    min: maxValue,
+    max: Number.POSITIVE_INFINITY,
+    unit,
+    description: '偏离正常值过多，请检查输入是否正确',
+    color: 'error',
+    iconType: 'error',
+    source: null,
+    isVisible: false,
+  };
+}
 
 function createStandardMassAndMolarUnits(
   molecularWeight: number,
@@ -178,6 +192,21 @@ function createProlactinUnits(): HormoneUnit[] {
   return [...processedBaseUnits, ...iuUnits];
 }
 
+function createProgesteroneUnits(): HormoneUnit[] {
+  const baseUnits = createStandardMassAndMolarUnits(314.46, 'ng/mL');
+  return baseUnits.map((unit) => {
+    if (
+      unit.symbol === 'ng/mL' ||
+      unit.symbol === 'μg/L' ||
+      unit.symbol === 'pmol/mL' ||
+      unit.symbol === 'nmol/L'
+    ) {
+      return { ...unit, category: 'common' as const };
+    }
+    return unit;
+  });
+}
+
 export const HORMONES: HormoneType[] = [
   {
     id: 'estradiol',
@@ -238,6 +267,9 @@ export const HORMONES: HormoneType[] = [
           url: '/zh-cn/docs/medicine/monitoring',
         },
       },
+      {
+        ...createMaxErrorRange(30000, 'pmol/L'),
+      },
     ],
   },
   {
@@ -286,6 +318,9 @@ export const HORMONES: HormoneType[] = [
           url: '/zh-cn/docs/medicine/hrt',
         },
       },
+      {
+        ...createMaxErrorRange(18320, 'ng/dL'),
+      },
     ],
   },
   {
@@ -311,7 +346,7 @@ export const HORMONES: HormoneType[] = [
       {
         label: '显著升高',
         min: 69.9,
-        max: Number.POSITIVE_INFINITY,
+        max: 116.5, // 正常上限23.3的5倍
         unit: 'ng/mL',
         description: '需要注意',
         color: 'error',
@@ -321,6 +356,9 @@ export const HORMONES: HormoneType[] = [
           url: '/zh-cn/docs/medicine/monitoring',
         },
       },
+      {
+        ...createMaxErrorRange(116.5, 'ng/mL'),
+      },
     ],
   },
   {
@@ -328,8 +366,8 @@ export const HORMONES: HormoneType[] = [
     name: '孕酮 (P4)',
     baseUnit: 'ng/mL',
     molecularWeight: 314.46,
-    units: createStandardMassAndMolarUnits(314.46, 'ng/mL'),
-    ranges: [],
+    units: createProgesteroneUnits(),
+    ranges: [createMaxErrorRange(2550, 'ng/mL')],
   },
   {
     id: 'fsh',
@@ -367,6 +405,9 @@ export const HORMONES: HormoneType[] = [
           name: '治疗期间的监测 - MtF.wiki',
           url: '/zh-cn/docs/medicine/monitoring',
         },
+      },
+      {
+        ...createMaxErrorRange(1200, 'mIU/mL'),
       },
     ],
   },
@@ -419,6 +460,9 @@ export const HORMONES: HormoneType[] = [
           name: '治疗期间的监测 - MtF.wiki',
           url: '/zh-cn/docs/medicine/monitoring',
         },
+      },
+      {
+        ...createMaxErrorRange(700, 'mIU/mL'),
       },
     ],
   },
