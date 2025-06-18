@@ -1,10 +1,16 @@
 'use client';
 
+import { useMemo } from 'react';
 import type { HormoneUnit } from '../lib/types';
+
+interface CombinedHormoneUnit extends HormoneUnit {
+  displayName: string | null;
+  equivalentUnits: HormoneUnit[];
+}
 
 interface UnitGroup {
   label: string;
-  units: HormoneUnit[];
+  units: CombinedHormoneUnit[];
 }
 
 interface UnitSelectorProps {
@@ -30,7 +36,7 @@ function processUnits(units: HormoneUnit[]): UnitGroup[] {
     multiplierGroups.get(key)!.push(unit);
   }
 
-  const processedUnits: HormoneUnit[] = [];
+  const processedUnits: CombinedHormoneUnit[] = [];
 
   // 处理每个 multiplier 组
   for (const [, equivalentUnits] of multiplierGroups) {
@@ -57,12 +63,17 @@ function processUnits(units: HormoneUnit[]): UnitGroup[] {
             return getVolumeOrder(a) - getVolumeOrder(b);
           })
           .join(' = '),
+        equivalentUnits,
       };
 
       processedUnits.push(mergedUnit);
     } else {
       // 只有一个单位，直接添加
-      processedUnits.push(equivalentUnits[0]);
+      processedUnits.push({
+        ...equivalentUnits[0],
+        displayName: null,
+        equivalentUnits: equivalentUnits,
+      });
     }
   }
 
@@ -99,11 +110,22 @@ export function UnitSelector({
   units,
   className = '',
 }: UnitSelectorProps) {
-  const groups = processUnits(units);
+  const groups = useMemo(() => processUnits(units), [units]);
+
+  const realValue = useMemo(() => {
+    for (const group of groups) {
+      for (const unit of group.units) {
+        if (unit.equivalentUnits.some((u) => u.symbol === value)) {
+          return unit.symbol;
+        }
+      }
+    }
+    return value;
+  }, [groups, value]);
 
   return (
     <select
-      value={value}
+      value={realValue}
       onChange={(e) => onChange(e.target.value)}
       className={`select select-bordered ${className}`}
     >

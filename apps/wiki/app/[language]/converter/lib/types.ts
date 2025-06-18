@@ -3,7 +3,6 @@ export interface HormoneUnit {
   symbol: string;
   multiplier: number; // 转换为基础单位的乘数
   category?: 'common' | 'uncommon'; // 单位分类
-  displayName?: string;
 }
 
 export interface HormoneType {
