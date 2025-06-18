@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import { useAtom } from "jotai";
-import { motion } from "motion/react";
-import { useState, useEffect } from "react";
-import { conversionStateAtom, addHistoryRecordAtom } from "../lib/atoms";
-import { performConversion, formatValue, getHormoneById } from "../lib/utils";
-import { RangeIndicator } from "./RangeIndicator";
-import { ArrowUpDown, Copy, Check, Calculator, X } from "lucide-react";
-import type { HormoneType } from "../lib/types";
+import { useAtom } from 'jotai';
+import { ArrowUpDown, Calculator, Check, Copy, X } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
+import { addHistoryRecordAtom, conversionStateAtom } from '../lib/atoms';
+import type { HormoneType } from '../lib/types';
+import { formatValue, getHormoneById, performConversion } from '../lib/utils';
+import { RangeIndicator } from './RangeIndicator';
+import { UnitSelector } from './UnitSelector';
 
 interface HormoneCardProps {
   hormone: HormoneType;
@@ -25,7 +26,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
   useEffect(() => {
     if (isSelected && state.fromUnit && state.toUnit) {
       const fromUnitExists = hormone.units.some(
-        (u) => u.symbol === state.fromUnit
+        (u) => u.symbol === state.fromUnit,
       );
       const toUnitExists = hormone.units.some((u) => u.symbol === state.toUnit);
 
@@ -55,7 +56,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
           state.inputValue,
           state.fromUnit,
           state.toUnit,
-          hormone.id
+          hormone.id,
         );
         setState((prev) => ({ ...prev, result }));
         setIsConverting(false);
@@ -81,10 +82,10 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
     // 转换计算现在由useEffect处理，避免重复计算
   };
 
-  const handleUnitChange = (type: "from" | "to", unit: string) => {
+  const handleUnitChange = (type: 'from' | 'to', unit: string) => {
     setState((prev) => ({
       ...prev,
-      [type === "from" ? "fromUnit" : "toUnit"]: unit,
+      [type === 'from' ? 'fromUnit' : 'toUnit']: unit,
     }));
     // 转换计算现在由useEffect处理，避免重复计算
   };
@@ -94,7 +95,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
     const newToUnit = state.fromUnit;
     const newInputValue = state.result?.isValid
       ? formatValue(state.result.value)
-      : "";
+      : '';
 
     setState((prev) => ({
       ...prev,
@@ -112,7 +113,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
           newInputValue,
           newFromUnit,
           newToUnit,
-          hormone.id
+          hormone.id,
         );
         setState((prev) => ({ ...prev, result }));
         setIsConverting(false);
@@ -128,7 +129,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
       } catch (err) {
-        console.error("Failed to copy:", err);
+        console.error('Failed to copy:', err);
       }
     }
   };
@@ -152,7 +153,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
   const clearInput = () => {
     setState((prev) => ({
       ...prev,
-      inputValue: "",
+      inputValue: '',
       result: null,
     }));
   };
@@ -164,7 +165,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
       className="bg-base-100 rounded-xl shadow-lg border border-base-300/30 overflow-hidden hover:shadow-xl transition-shadow duration-300"
     >
       <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-4 md:p-6 border-b border-base-300/30">
@@ -208,17 +209,12 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
                   </motion.button>
                 )}
               </div>
-              <select
+              <UnitSelector
                 value={state.fromUnit}
-                onChange={(e) => handleUnitChange("from", e.target.value)}
-                className="select select-bordered w-24"
-              >
-                {hormone.units.map((unit) => (
-                  <option key={unit.symbol} value={unit.symbol}>
-                    {unit.symbol}
-                  </option>
-                ))}
-              </select>
+                onChange={(unit) => handleUnitChange('from', unit)}
+                units={hormone.units}
+                className="w-36"
+              />
             </div>
           </div>
 
@@ -249,7 +245,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
                     transition={{
                       duration: 1,
                       repeat: Number.POSITIVE_INFINITY,
-                      ease: "linear",
+                      ease: 'linear',
                     }}
                     className="loading loading-spinner loading-md mx-auto"
                   />
@@ -257,21 +253,10 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
                   <span className="font-mono text-2xl font-semibold text-base-content">
                     {state.result?.isValid
                       ? formatValue(state.result.value)
-                      : "—"}
+                      : '—'}
                   </span>
                 )}
               </div>
-              <select
-                value={state.toUnit}
-                onChange={(e) => handleUnitChange("to", e.target.value)}
-                className="select select-bordered w-24"
-              >
-                {hormone.units.map((unit) => (
-                  <option key={unit.symbol} value={unit.symbol}>
-                    {unit.symbol}
-                  </option>
-                ))}
-              </select>
               {state.result?.isValid && (
                 <motion.button
                   onClick={copyResult}
@@ -287,6 +272,12 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
                   )}
                 </motion.button>
               )}
+              <UnitSelector
+                value={state.toUnit}
+                onChange={(unit) => handleUnitChange('to', unit)}
+                units={hormone.units}
+                className="w-36"
+              />
             </div>
           </div>
 
