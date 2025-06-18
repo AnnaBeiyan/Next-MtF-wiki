@@ -10,10 +10,30 @@ import {
   areUnitsEquivalent,
   convertRangeToUnit,
   formatRangeText,
+  isIUStandard,
 } from '../lib/utils';
 
 interface ReferenceRangesProps {
   hormone: HormoneType;
+}
+
+/**
+ * 判断是否应该跳过单位转换显示
+ */
+function shouldSkipUnitConversion(
+  rangeUnit: string,
+  fromUnit: string,
+  toUnit: string,
+): boolean {
+  const rangeIsIU = isIUStandard(rangeUnit);
+  const fromIsIU = isIUStandard(fromUnit);
+  const toIsIU = isIUStandard(toUnit);
+
+  if (rangeIsIU === fromIsIU && rangeIsIU === toIsIU) {
+    return false;
+  }
+
+  return true;
 }
 
 export function ReferenceRanges({ hormone }: ReferenceRangesProps) {
@@ -68,17 +88,24 @@ export function ReferenceRanges({ hormone }: ReferenceRangesProps) {
                   {range.label}
                 </div>
                 <div className="text-sm text-base-content/70 mt-1">
-                  {unitsAreEquivalent || !fromUnitRange || !toUnitRange ? (
-                    // 等价单位或转换失败时，只显示一种单位
+                  {!fromUnitRange ||
+                  !toUnitRange ||
+                  shouldSkipUnitConversion(range.unit, fromUnit, toUnit) ? (
+                    // 转换失败或需要跳过转换时，只显示原始单位
                     <>
                       {formatRangeText(range.min, range.max)} {range.unit}
                     </>
-                  ) : (
-                    // 不等价单位时，显示两种单位的范围
+                  ) : unitsAreEquivalent ? (
                     <>
                       {formatRangeText(fromUnitRange.min, fromUnitRange.max)}{' '}
                       {fromUnit}
-                      <span className="text-base-content/50 mx-2">/</span>
+                    </>
+                  ) : (
+                    // 其他情况显示两种单位的范围
+                    <>
+                      {formatRangeText(fromUnitRange.min, fromUnitRange.max)}{' '}
+                      {fromUnit}
+                      <span className="text-base-content/50 mx-2">|</span>
                       {formatRangeText(toUnitRange.min, toUnitRange.max)}{' '}
                       {toUnit}
                     </>

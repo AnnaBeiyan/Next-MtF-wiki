@@ -124,18 +124,15 @@ export function performConversion(
 export function formatValue(value: number): string {
   if (value === 0) return '0';
 
-  // 根据数值大小选择合适的精度
-  if (value >= 1000) {
-    return value.toFixed(0);
-  } else if (value >= 100) {
-    return value.toFixed(1);
-  } else if (value >= 10) {
-    return value.toFixed(2);
-  } else if (value >= 1) {
-    return value.toFixed(3);
-  } else {
-    return value.toFixed(4);
-  }
+  return format('.4~r')(value);
+}
+
+/**
+ * 判断单位是否为IU（国际单位）标准
+ */
+export function isIUStandard(unit: string): boolean {
+  const iuUnits = ['mIU/mL', 'IU/L', 'mIU/L', 'μIU/mL', 'μIU/L'];
+  return iuUnits.includes(unit);
 }
 
 /**
@@ -188,7 +185,6 @@ export function formatRangeValue(value: number): string {
   if (value === Number.POSITIVE_INFINITY) return '∞';
   if (value === 0) return '0';
 
-  // 根据数值大小选择合适的精度
   return format('.4~r')(value);
 }
 

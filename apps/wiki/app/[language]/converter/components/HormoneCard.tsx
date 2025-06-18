@@ -1,14 +1,25 @@
 'use client';
 
 import { useAtom } from 'jotai';
-import { ArrowUpDown, Calculator, Check, Copy, X } from 'lucide-react';
+import { ArrowUpDown, Calculator, Check, Copy, Info, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { addHistoryRecordAtom, conversionStateAtom } from '../lib/atoms';
 import type { HormoneType } from '../lib/types';
 import { formatValue, performConversion } from '../lib/utils';
+import { isIUStandard } from '../lib/utils';
 import { RangeIndicator } from './RangeIndicator';
 import { UnitSelector } from './UnitSelector';
+
+/**
+ * 判断是否为IU和质量单位之间的换算
+ */
+function isIUToMassConversion(fromUnit: string, toUnit: string): boolean {
+  const fromIsIU = isIUStandard(fromUnit);
+  const toIsIU = isIUStandard(toUnit);
+
+  return fromIsIU !== toIsIU;
+}
 
 interface HormoneCardProps {
   hormone: HormoneType;
@@ -186,9 +197,11 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
         <h3 className="text-xl font-semibold text-base-content">
           {hormone.name}
         </h3>
-        {/* <p className="text-sm text-base-content/60 mt-1">
-          支持 {hormone.units.map(u => u.symbol).join('、')} 单位互转
-        </p> */}
+        {/* {hormone.description && (
+          <p className="text-sm text-base-content/60 mt-1">
+            {hormone.description}
+          </p>
+        )} */}
       </div>
 
       <div className="p-4 md:p-6">
@@ -205,7 +218,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
                   ref={inputRef}
                   type="text"
                   inputMode="numeric"
-                  pattern="[0-9]*"
+                  pattern="[0-9.]*"
                   value={state.inputValue}
                   onChange={(e) => handleInputChange(e.target.value)}
                   placeholder="请输入数值"
@@ -265,7 +278,7 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
                     className="loading loading-spinner loading-md mx-auto"
                   />
                 ) : (
-                  <span className="font-mono text-2xl font-semibold text-base-content">
+                  <span className="font-mono text-2xl font-semibold text-base-content break-all">
                     {state.result?.isValid
                       ? formatValue(state.result.value)
                       : '—'}
@@ -294,6 +307,16 @@ export function HormoneCard({ hormone }: HormoneCardProps) {
                 className="w-36"
               />
             </div>
+
+            {/* IU和质量单位换算提示 */}
+            {isIUToMassConversion(state.fromUnit, state.toUnit) && (
+              <div className="alert alert-info">
+                <Info className="w-6 h-6" />
+                <span className="text-sm">
+                  IU 和质量单位之间的换算结果仅供参考。
+                </span>
+              </div>
+            )}
           </div>
 
           {/* 操作按钮 */}
